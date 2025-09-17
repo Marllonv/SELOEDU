@@ -1,0 +1,30 @@
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+div {
+    margin-top: 10vh;
+    justify-content: center;
+    border: 1px solid black;
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 2px 2px 3px rgb(145, 145, 145);
+}
+
+#login {
+    color: white;
+    background-color: rgb(35, 35, 172);
+    font-style: normal;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 5px;
+
+}
