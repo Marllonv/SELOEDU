@@ -1,25 +1,48 @@
-from flask import Flask
-from flask import render_template
+# app.py
+from flask import Flask, render_template
+from models.users import db, User
+from extensions import login_manager
+from routes.auth import auth_bp
+from routes.users import users_bp
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'sua_chave_secreta'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///seloedu.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-users = [
-    {"id": 1, "nome": "Ana", "email": "ana@email.com", "perfil": "Admin", "status": "Ativo"},
-    {"id": 2, "nome": "Bruno", "email": "bruno@email.com", "perfil": "Usuário", "status": "Ativo"},
-    {"id": 3, "nome": "Carla", "email": "carla@email.com", "perfil": "Usuário", "status": "Inativo"},
-    {"id": 4, "nome": "Daniel", "email": "daniel@email.com", "perfil": "Admin", "status": "Ativo"},
-    {"id": 5, "nome": "Eduarda", "email": "eduarda@email.com", "perfil": "Usuário", "status": "Ativo"},
-    {"id": 6, "nome": "Felipe", "email": "felipe@email.com", "perfil": "Usuário", "status": "Ativo"},
-    {"id": 7, "nome": "Gabriela", "email": "gabi@email.com", "perfil": "Usuário", "status": "Inativo"}
-]
+    db.init_app(app)
+    login_manager.init_app(app)
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+    # registrar blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(users_bp)
 
-@app.route("/users")
-def users_page():
-    return render_template("users.html", users=users)
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    # cria usuário master se não existir
+    with app.app_context():
+        db.create_all()
+        if not User.query.filter_by(email="admin@seloedu.com").first():
+            master = User(
+                nome="Admin Master",
+                email="admin@seloedu.com",
+                role="master"
+            )
+            master.set_password("123456")
+            db.session.add(master)
+            db.session.commit()
+
+    # rota principal
+    @app.route("/")
+    def home():
+        return render_template("home.html")
+
+    return app
+
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)
