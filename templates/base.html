@@ -9,7 +9,7 @@
     <header>
         {% if current_user.is_authenticated %}
             <nav>
-                <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+                <a href="{{ url_for('users.dashboard') }}">Dashboard</a> |
                 <a href="{{ url_for('users.index') }}">Usuários</a> |
                 <a href="{{ url_for('auth.logout') }}">Sair</a>
             </nav>
