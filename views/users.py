@@ -1,6 +1,12 @@
 from flask import render_template, request, redirect, url_for, flash
 from models.users import db, User
 
+def render_perfil_page(usuario, perfil):
+    return render_template(
+        'users/profile.html', 
+        usuario=usuario, 
+        perfil=perfil,
+    )
 
 def dashboard_view(current_user):
     return render_template("dashboard.html", user=current_user)
