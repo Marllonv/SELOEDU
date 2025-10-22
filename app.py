@@ -1,7 +1,8 @@
 # app.py
 from flask import Flask, render_template
 from models.users import db, User
-from extensions import login_manager
+from extensions import login_manager, mail
+from config import Config
 from routes.auth import auth_bp
 from routes.users import users_bp
 
@@ -11,7 +12,10 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///seloedu.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    app.config.from_object(Config)
     db.init_app(app)
+    login_manager.init_app(app)
+    mail.init_app(app)
     login_manager.init_app(app)
 
     # registrar blueprints
