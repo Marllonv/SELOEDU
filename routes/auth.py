@@ -1,26 +1,19 @@
-# routes/auth.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user
-from models.users import User, db
+from flask import Blueprint
+from views.auth import login as login_view, logout as logout_view, 
 
+# 1. DEFINIÇÃO DO BLUEPRINT
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-@auth_bp.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        user = User.query.filter_by(email=email).first()
+# 2. REGISTRO MANUAL DAS ROTAS
 
-        if user and user.check_password(password):
-            login_user(user)
-            return redirect(url_for("users.dashboard"))
-        else:
-            flash("Credenciais inválidas!", "danger")
+# Rota de Login: /auth/login
+auth_bp.route("/login", endpoint="login", methods=["GET", "POST"])(login_view)
 
-    return render_template("auth/login.html")
+# Rota de Logout: /auth/logout
+auth_bp.route("/logout", endpoint="logout", methods=["GET"])(logout_view)
 
-@auth_bp.route("/logout")
-def logout():
-    logout_user()
-    return redirect(url_for("auth.login"))
+# Rota de Recovery: /auth/recovery
+auth_bp.route("/forgot_password", endpoint="forgot_password", methods=["GET", "POST"])(recovery_view)
+
+# Rota de Reset Password: /auth/reset_password
+auth_bp.route("/reset_password", endpoint="reset_password", methods=["GET", "POST"])(recovery_view)
