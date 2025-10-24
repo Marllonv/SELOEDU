@@ -1,43 +1,71 @@
 from flask import render_template, request, redirect, url_for, flash
-from models.users import db, User
-
-def render_perfil_page(usuario, perfil):
-    return render_template(
-        'users/profile.html', 
-        usuario=usuario, 
-        perfil=perfil,
-    )
+from extensions import db
+from models.users import User
+from models.profile import Profile
 
 def dashboard_view(current_user):
     return render_template("dashboard.html", user=current_user)
 
+def atualizar_perfil_view(usuario):
+    perfil = usuario.perfil
+
+    if request.method == 'POST':
+        telefone = request.form.get('telefone')
+        instituicao = request.form.get('instituicao')
+        cargo = request.form.get('cargo')
+        bio = request.form.get('bio')
+
+        if perfil is None:
+            perfil = Profile(
+                user_id=usuario.id,
+                telefone=telefone,
+                instituicao=instituicao,
+                cargo=cargo,
+                bio=bio
+            )
+            db.session.add(perfil)
+        else:
+            perfil.telefone = telefone
+            perfil.instituicao = instituicao
+            perfil.cargo = cargo
+            perfil.bio = bio
+
+        try:
+            db.session.commit()
+            flash('Seu perfil foi atualizado com sucesso!', 'success')
+            return redirect(url_for('users.atualizar_perfil'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao salvar o perfil: {e}', 'danger')
+
+    return render_template('users/profile.html', usuario=usuario, perfil=perfil)
 
 def list_users():
     users = User.query.all()
     return render_template("users/index.html", users=users)
-
 
 def create_user():
     if request.method == "POST":
         nome = request.form.get("nome")
         email = request.form.get("email")
         password = request.form.get("password")
+
         if User.query.filter_by(email=email).first():
             flash("Email já cadastrado.", "danger")
             return redirect(url_for("users.new"))
+
         user = User(nome=nome, email=email)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
         flash("Usuário criado com sucesso.", "success")
         return redirect(url_for("users.index"))
-    return render_template("users/form.html")
 
+    return render_template("users/form.html")
 
 def show_user(id):
     user = User.query.get_or_404(id)
     return render_template("users/show.html", user=user)
-
 
 def edit_user(id):
     user = User.query.get_or_404(id)
@@ -51,7 +79,6 @@ def edit_user(id):
         flash("Usuário atualizado com sucesso.", "success")
         return redirect(url_for("users.show", id=user.id))
     return render_template("users/form.html", user=user)
-
 
 def delete_user(id):
     user = User.query.get_or_404(id)
