@@ -3,3 +3,6 @@ Foi definida a relação de users e profile.
 
 22/10
 Foi implementada a funcionalidade de forgot password e reset password.
+
+03/11
+Implementada a área de treinamentos, com um CRUD inicial para criação e exclusão.
