@@ -52,14 +52,14 @@ def create_user():
 
         if User.query.filter_by(email=email).first():
             flash("Email já cadastrado.", "danger")
-            return redirect(url_for("users.new"))
+            return redirect(url_for("users.create_user"))
 
         user = User(nome=nome, email=email)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
         flash("Usuário criado com sucesso.", "success")
-        return redirect(url_for("users.index"))
+        return redirect(url_for("users.list_users"))
 
     return render_template("users/form.html")
 
@@ -73,12 +73,16 @@ def edit_user(id):
         user.nome = request.form.get("nome")
         user.email = request.form.get("email")
         password = request.form.get("password")
+        role = request.form.get("role")
         if password:
             user.set_password(password)
+        if role:
+            user.role = role
         db.session.commit()
         flash("Usuário atualizado com sucesso.", "success")
-        return redirect(url_for("users.show", id=user.id))
+        return redirect(url_for("users.show_user", id=user.id))
     return render_template("users/form.html", user=user)
+
 
 def delete_user(id):
     user = User.query.get_or_404(id)

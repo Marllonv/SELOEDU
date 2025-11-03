@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Listar Treinamentos{% endblock %}
+{% block content %}
+<h2>Treinamentos</h2>
+{% if current_user.role == "coordenador" %}
+    <a href="{{ url_for('treinamento.novo') }}">Novo Treinamento</a>
+{% endif %}
+<ul>
+    {% for t in treinamentos %}
+    <li>
+        <a href="{{ url_for('treinamento.detalhes', id=t.id) }}">{{ t.titulo }}</a>
+        ({{t.data_inicio}} - {{t.data_fim}})
+        {% if current_user.role == "coordenador" %}
+        - <a href="{{ url_for('treinamento.editar', id=t.id) }}">Editar</a>
+        <form action="{{ url_for('treinamento.deletar', id=t.id) }}" method="post" style="display:inline;">
+            <button type="submit">Excluir</button>
+        </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

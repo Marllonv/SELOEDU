@@ -5,7 +5,7 @@
 {% block content %}
   <h2>Usuários</h2>
 
-  <p><a href="{{ url_for('users.new') }}">+ Novo usuário</a></p>
+  <p><a href="{{ url_for('users.create_user') }}">+ Novo usuário</a></p>
 
   {% if users %}
     <table border="1" cellpadding="6">
@@ -22,13 +22,13 @@
         {% for u in users %}
           <tr>
             <td>{{ u.id }}</td>
-            <td><a href="{{ url_for('users.show', id=u.id) }}">{{ u.nome }}</a></td>
+            <td><a href="{{ url_for('users.show_user', id=u.id) }}">{{ u.nome }}</a></td>
             <td>{{ u.email }}</td>
             <td>{{ u.role }}</td>
             <td>
-              <a href="{{ url_for('users.edit', id=u.id) }}">Editar</a>
+              <a href="{{ url_for('users.edit_user', id=u.id) }}">Editar</a>
               |
-              <form action="{{ url_for('users.delete', id=u.id) }}" method="post" style="display:inline">
+              <form action="{{ url_for('users.delete_user', id=u.id) }}" method="post" style="display:inline">
                 <button type="submit">Excluir</button>
               </form>
             </td>

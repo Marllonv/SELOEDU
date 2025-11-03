@@ -7,10 +7,16 @@ from views.users import (
 
 users_bp = Blueprint("users", __name__)
 
-users_bp.add_url_rule("/dashboard      ", view_func=login_required(lambda: dashboard_view(current_user)))
-users_bp.add_url_rule("/perfil         ", view_func=login_required(lambda: atualizar_perfil_view(current_user)), methods=["GET", "POST"])
-users_bp.add_url_rule("/list           ", view_func=login_required(list_users))
-users_bp.add_url_rule("/new            ", view_func=login_required(create_user), methods=["GET", "POST"])
-users_bp.add_url_rule("/<int:id>       ", view_func=login_required(show_user), methods=["GET"])
-users_bp.add_url_rule("/<int:id>/edit  ", view_func=login_required(edit_user), methods=["GET", "POST"])
+def dashboard():
+    return dashboard_view(current_user)
+
+def atualizar_perfil():
+    return atualizar_perfil_view(current_user)
+
+users_bp.add_url_rule("/dashboard", view_func=login_required(dashboard))
+users_bp.add_url_rule("/perfil", view_func=login_required(atualizar_perfil), methods=["GET", "POST"])
+users_bp.add_url_rule("/list", view_func=login_required(list_users))
+users_bp.add_url_rule("/new", view_func=login_required(create_user), methods=["GET", "POST"])
+users_bp.add_url_rule("/<int:id>", view_func=login_required(show_user), methods=["GET"])
+users_bp.add_url_rule("/<int:id>/edit", view_func=login_required(edit_user), methods=["GET", "POST"])
 users_bp.add_url_rule("/<int:id>/delete", view_func=login_required(delete_user), methods=["POST"])

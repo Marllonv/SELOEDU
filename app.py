@@ -5,6 +5,7 @@ from extensions import login_manager, mail
 from config import Config
 from routes.auth import auth_bp
 from routes.users import users_bp
+from routes.treinamento import treinamento_bp
 
 def create_app():
     app = Flask(__name__)
@@ -14,16 +15,14 @@ def create_app():
     login_manager.init_app(app)
     mail.init_app(app)
 
-
-    # registrar blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
+    app.register_blueprint(treinamento_bp)
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # cria usuário master se não existir
     with app.app_context():
         db.create_all()
         if not User.query.filter_by(email="admin@seloedu.com").first():
@@ -36,7 +35,6 @@ def create_app():
             db.session.add(master)
             db.session.commit()
 
-    # rota principal
     @app.route("/")
     def home():
         return render_template("home.html")
