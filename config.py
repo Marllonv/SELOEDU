@@ -10,3 +10,5 @@ class Config:
     MAIL_USERNAME = ""
     MAIL_PASSWORD = ""
     MAIL_DEFAULT_SENDER = "reset_password@seloedu"
+    UPLOAD_FOLDER = 'static/uploads'
+    THUMBNAIL_SIZE = (200, 200)

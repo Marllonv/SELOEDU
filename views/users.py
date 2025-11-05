@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, flash
 from extensions import db
 from models.users import User
 from models.profile import Profile
+from utils.uploads import save_image
 
 def dashboard_view(current_user):
     return render_template("dashboard.html", user=current_user)
@@ -14,6 +15,11 @@ def atualizar_perfil_view(usuario):
         instituicao = request.form.get('instituicao')
         cargo = request.form.get('cargo')
         bio = request.form.get('bio')
+        foto_file = request.files.get('foto')
+
+        foto_filename, foto_thumb = None, None
+        if foto_file and foto_file.filename:
+            foto_filename, foto_thumb = save_image(foto_file, user_name=usuario.nome)
 
         if perfil is None:
             perfil = Profile(
@@ -21,7 +27,9 @@ def atualizar_perfil_view(usuario):
                 telefone=telefone,
                 instituicao=instituicao,
                 cargo=cargo,
-                bio=bio
+                bio=bio,
+                foto=foto_filename,
+                foto_thumb=foto_thumb
             )
             db.session.add(perfil)
         else:
@@ -29,6 +37,10 @@ def atualizar_perfil_view(usuario):
             perfil.instituicao = instituicao
             perfil.cargo = cargo
             perfil.bio = bio
+            if foto_filename:
+                perfil.foto = foto_filename
+            if foto_thumb:
+                perfil.foto_thumb = foto_thumb
 
         try:
             db.session.commit()
@@ -38,7 +50,7 @@ def atualizar_perfil_view(usuario):
             db.session.rollback()
             flash(f'Erro ao salvar o perfil: {e}', 'danger')
 
-    return render_template('users/profile.html', usuario=usuario, perfil=perfil)
+    return render_template('users/profile.html', usuario=usuario, profile=perfil)
 
 def list_users():
     users = User.query.all()

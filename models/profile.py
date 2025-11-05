@@ -10,11 +10,15 @@ class Profile(db.Model):
     instituicao = db.Column(db.String(100), nullable=True)
     cargo = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.String(100), nullable=True)
+    foto = db.Column(db.String(200), nullable=True)
+    foto_thumb = db.Column(db.String(200), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+    
     
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
 
     user = db.relationship(
         'User',
-        back_populates='perfil', # Nome do atributo de relacionamento na classe User
+        back_populates='perfil', 
         uselist=False
     )
